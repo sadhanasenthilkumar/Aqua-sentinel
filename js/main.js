@@ -119,7 +119,7 @@ async function loadOverview() {
       const msg=document.createElement("p"); msg.className="note"; msg.textContent="Backend connected. No reservoir-history records are currently loaded, so the chart is intentionally blank rather than showing invented values."; chartCanvas.parentElement.appendChild(msg);
     }
     const weatherCount = (rainfall.data || []).filter(x => !x.error).length;
-    if (stats[0]) stats[0].querySelector("small").textContent = dams.length + " dam profiles · " + weatherCount + " rainfall feeds responding";
+    if (stats[0]) stats[0].querySelector("small").textContent = dams.length + " dam profiles · rainfall estimates available: " + weatherCount + "/" + (rainfall.data || []).length;
     const badge = document.querySelector(".topbar .demo-label");
     if (badge) badge.textContent = "BACKEND CONNECTED · HISTORICAL DATA";
   } catch (error) {
