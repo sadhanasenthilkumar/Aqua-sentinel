@@ -1,4 +1,3 @@
-
 const API_BASE = "https://aqua-sentinel-6dkm.onrender.com";
 const dams = {
   mettur:{name:"Mettur Dam",district:"Salem",river:"Cauvery"},
@@ -33,9 +32,8 @@ document.addEventListener("DOMContentLoaded",async()=>{
   const rainfall=results[1].status==="fulfilled"?results[1].value:null;
   const qualityRows=results[2].status==="fulfilled"?results[2].value:[];
   const current=rainfall&&rainfall.current?rainfall.current:{};
-  const daily=rainfall&&rainfall.daily_forecast?rainfall.daily_forecast:{};
-  const demoLabel=document.querySelector(".demo-label");
-  if(demoLabel)demoLabel.textContent="BACKEND DATA · HISTORICAL / ESTIMATED";
+  const label=document.querySelector(".demo-label");
+  if(label)label.textContent="BACKEND DATA · HISTORICAL / WEATHER ESTIMATES";
   facts.innerHTML=[
     detail("District",dam.district),detail("River",dam.river),
     detail("Record date",reading?reading.date:"No reservoir history loaded"),
@@ -44,19 +42,28 @@ document.addEventListener("DOMContentLoaded",async()=>{
     detail("Capacity (MCft)",reading?reading.capacity_mcft:null),
     detail("Inflow (cusecs)",reading?reading.inflow_cusecs:null),
     detail("Outflow (cusecs)",reading?reading.outflow_cusecs:null),
+    detail("Reservoir data type",reading?(reading.data_type||"Historical record"):"Unavailable"),
+    detail("Reservoir data source",reading?(reading.source||"Source not specified"):"Unavailable"),
     detail("Rainfall estimate (mm)",current.precipitation),
-    detail("Rainfall / weather source",rainfall?"Open-Meteo weather model":"Temporarily unavailable")
+    detail("Rainfall / weather source",rainfall?(rainfall.cache_status==="stale"?"Open-Meteo · cached estimate":"Open-Meteo weather-model estimate"):"Temporarily unavailable")
   ].join("");
-  const matching=qualityRows.filter(row=>String(row.station||"").toLowerCase().includes(slug)||String(row.station||"").toLowerCase().includes(dam.name.toLowerCase()));
-  quality.innerHTML=matching.length?matching.map(row=>[
+  // Keep one copy of each identical station/date/measurement row.
+  const matching=qualityRows.filter(row=>{
+    const station=String(row.station||"").toLowerCase();
+    return station.includes(slug)||station.includes(dam.name.toLowerCase().replace(" dam",""));
+  });
+  const uniqueRows=[...new Map(matching.map(row=>[
+    [row.station,row.date,row.pH,row.turbidity,row.status].join("|"),row
+  ])).values()];
+  quality.innerHTML=uniqueRows.length?uniqueRows.map(row=>[
     detail("Sample station",row.station),detail("Sample date",row.date),
     detail("pH",row.pH),detail("Turbidity",row.turbidity),
     detail("Screening status",row.status)
-  ].join("")).join(""):"<p>No verified water-quality sample is currently linked specifically to "+esc(dam.name)+". General CSV history is not assigned to a dam without a matching station identifier.</p>";
+  ].join("")).join(""):"<p>No water-quality sample is currently linked specifically to "+esc(dam.name)+". A general CSV record is not automatically assigned to a dam.</p>";
   const qualityNote=quality.parentElement.querySelector(".note");
-  if(qualityNote)qualityNote.textContent="Water-quality records are shown only when the sample station can be matched to this dam. Preliminary CSV screening is not a laboratory certification.";
+  if(qualityNote)qualityNote.textContent="Preliminary CSV screening only; these values are not laboratory-certified and do not establish drinking-water safety.";
   const risk=document.querySelectorAll(".panel")[2];
-  if(risk)risk.innerHTML="<h3>Storage trend estimate</h3><p>Request a simple historical trend estimate from the backend. It is not a trained AI/ML model or a dam-safety prediction.</p><button id='getEstimate' type='button'>Get 7-day estimate</button><div id='estimateResult' class='result-box' aria-live='polite'>No prediction requested.</div>";
+  if(risk)risk.innerHTML="<h3>Storage trend estimate</h3><p>Request a simple historical trend estimate. It is not a trained AI/ML model or a dam-safety prediction.</p><button id='getEstimate' type='button'>Get 7-day estimate</button><div id='estimateResult' class='result-box' aria-live='polite'>No prediction requested.</div>";
   const btn=document.getElementById("getEstimate");
   if(btn)btn.addEventListener("click",async()=>{
     const box=document.getElementById("estimateResult");box.textContent="Loading estimate…";
@@ -65,10 +72,15 @@ document.addEventListener("DOMContentLoaded",async()=>{
       box.innerHTML="<strong>"+esc(prediction.method)+"</strong><p>Latest historical date: "+esc(prediction.latest_historical_date)+"</p><ul>"+(prediction.predictions||[]).map(x=>"<li>Day "+esc(x.day)+": "+esc(x.estimated_storage_mcft)+" MCft</li>").join("")+"</ul><p class='note'>"+esc(prediction.notice)+"</p>";
     }catch(error){box.textContent="Estimate unavailable: "+error.message;}
   });
-  if(results[0].status!=="fulfilled"&&!reading){
-    const note=document.createElement("p");note.className="note";note.textContent="Reservoir API: "+results[0].reason.message;facts.appendChild(note);
+  if(results[0].status!=="fulfilled"){
+    facts.insertAdjacentHTML("beforeend",'<p class="note">Reservoir records could not be loaded. Please try again later.</p>');
   }
   if(results[1].status!=="fulfilled"){
-    const note=document.createElement("p");note.className="note";note.textContent="Rainfall API: "+results[1].reason.message;facts.appendChild(note);
+    facts.insertAdjacentHTML("beforeend",'<p class="note">Rainfall estimates are temporarily unavailable from the weather provider. Reservoir records are unaffected.</p>');
+  } else if(rainfall.cache_notice){
+    facts.insertAdjacentHTML("beforeend",'<p class="note">'+esc(rainfall.cache_notice)+'</p>');
+  }
+  if(results[2].status!=="fulfilled"){
+    quality.innerHTML="<p>Water-quality history is temporarily unavailable.</p>";
   }
 });
