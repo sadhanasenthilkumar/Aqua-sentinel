@@ -1,0 +1,314 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aqua Sentinel | Water Intelligence</title>
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <a class="brand" href="#overview">💧 AQUA <span>SENTINEL</span></a>
+  <p class="side-label">WATER INTELLIGENCE</p>
+  <nav>
+    <a href="#overview">⌂ Overview</a>
+    <a href="#monitoring">🌊 Dam Monitoring</a>
+    <a href="#comparison">▥ Dam Comparison</a>
+    <a href="#quality">💧 Water Quality</a>
+    <a href="#predictions">◈ AI Predictions</a>
+    <a href="#public">🌱 Public Reports</a>
+    <a href="#alerts">🔔 Alerts</a>
+    <a href="#about">ⓘ About</a>
+    <a href="dashboard.html">▦ All Dam Profiles</a>
+  </nav>
+  <div class="sidebar-foot">Aqua Sentinel<br><small>Demo frontend</small></div>
+</aside>
+
+<main class="main">
+<header class="topbar">
+<div>
+  <p class="eyebrow">TAMIL NADU • WATER RESOURCE PLATFORM</p>
+  <h1>Water Intelligence Dashboard</h1>
+  <p class="muted">Explore reservoir information, water quality and public reports.</p>
+</div>
+<span class="demo-label">DEMO / SAMPLE DATA</span>
+</header>
+
+<section id="overview" class="section">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">OVERVIEW</p>
+      <h2>Tamil Nadu Water Overview</h2>
+      <p class="muted">A single place to explore five selected reservoirs.</p>
+    </div>
+  </div>
+
+  <div class="stats">
+    <article class="stat-card"><span>Monitored dams</span><strong>05</strong><small>Sample project coverage</small></article>
+    <article class="stat-card"><span>Water parameters</span><strong>06</strong><small>pH, DO, BOD, COD, TDS, turbidity</small></article>
+    <article class="stat-card"><span>Public reports</span><strong id="reportCount">0</strong><small>Saved in this browser only</small></article>
+    <article class="stat-card"><span>Data connection</span><strong class="status-text">Demo</strong><small>Backend / live sensors not connected</small></article>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">
+      <div>
+        <h3>Reservoir overview</h3>
+        <p class="muted">Illustrative index values, not actual water levels.</p>
+      </div>
+    </div>
+    <div class="chart-wrap"><canvas id="overviewChart"></canvas></div>
+  </div>
+
+  <h3 class="subheading">Explore dams</h3>
+  <div class="dam-grid" id="damCards"></div>
+</section>
+
+<section id="monitoring" class="section">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">RESERVOIR DATA</p>
+      <h2>Dam Monitoring</h2>
+      <p class="muted">Choose a dam to view its profile and available data status.</p>
+    </div>
+  </div>
+  <div class="panel">
+    <label for="damSelect">Choose dam</label>
+    <select id="damSelect"></select>
+    <div id="damInformation" class="dam-info-card"></div>
+  </div>
+</section>
+
+<section id="comparison" class="section">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">COMPARE</p>
+      <h2>Dam Comparison</h2>
+      <p class="muted">Compare illustrative index values for two selected dams.</p>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="form-grid">
+      <div>
+        <label for="compareDam1">First dam</label>
+        <select id="compareDam1"></select>
+      </div>
+      <div>
+        <label for="compareDam2">Second dam</label>
+        <select id="compareDam2"></select>
+      </div>
+    </div>
+    <button id="compareButton" type="button">Compare dams</button>
+    <div class="chart-wrap"><canvas id="comparisonChart"></canvas></div>
+    <p class="note">Values are fictional demonstration indices and must not be treated as measured reservoir data.</p>
+  </div>
+</section>
+
+<section id="quality" class="section">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">WATER QUALITY</p>
+      <h2>Water Quality Analysis</h2>
+      <p class="muted">Enter sample values or upload a file for analysis.</p>
+    </div>
+  </div>
+
+  <!-- Existing Manual Water Quality Analysis -->
+  <div class="panel">
+    <h3>Manual Water Quality Analysis</h3>
+    <div class="form-grid">
+      <div><label for="sampleDam">Dam / sample location</label><select id="sampleDam"></select></div>
+      <div><label for="sampleDate">Sample date</label><input id="sampleDate" type="date"></div>
+      <div><label for="phInput">pH</label><input id="phInput" type="number" step="0.1" placeholder="e.g. 7.2"></div>
+      <div><label for="doInput">Dissolved Oxygen (mg/L)</label><input id="doInput" type="number" step="0.1" placeholder="e.g. 6.5"></div>
+      <div><label for="bodInput">BOD (mg/L)</label><input id="bodInput" type="number" step="0.1" placeholder="e.g. 2"></div>
+      <div><label for="codInput">COD (mg/L)</label><input id="codInput" type="number" step="0.1" placeholder="e.g. 10"></div>
+      <div><label for="turbidityInput">Turbidity (NTU)</label><input id="turbidityInput" type="number" step="0.1" placeholder="e.g. 3"></div>
+      <div><label for="tdsInput">TDS (mg/L)</label><input id="tdsInput" type="number" step="1" placeholder="e.g. 250"></div>
+    </div>
+
+    <button id="analyzeButton" type="button">Analyze sample</button>
+    <div id="analysisResult" class="result-box" aria-live="polite">Enter all six measurements to view the demonstration result.</div>
+  </div>
+
+  <!-- Existing Optional File Selection -->
+  <div class="panel">
+    <h3>Optional file selection</h3>
+    <p class="muted">Choose a CSV or PDF report for reference.</p>
+    <label for="qualityFile">Select CSV / PDF</label>
+    <input id="qualityFile" type="file" accept=".csv,.pdf">
+    <p id="fileMessage" class="note">No file selected.</p>
+  </div>
+
+  <!-- NEW: CSV Upload and Analysis -->
+  <div class="panel">
+    <h3>📊 CSV Water Quality Analysis</h3>
+    <p class="muted">
+      Upload a CSV file containing water-quality measurements.
+      The system will read the data and display analysis results.
+    </p>
+
+    <label for="csvUpload">Upload CSV File</label>
+    <input type="file" id="csvUpload" accept=".csv,text/csv">
+
+    <button id="analyzeCSV" type="button">Analyze CSV File</button>
+
+    <div id="csvResults" class="result-box" aria-live="polite">
+      Upload a CSV file to view its water-quality analysis.
+    </div>
+  </div>
+
+  <!-- NEW: Water Sample Image Upload -->
+  <div class="panel">
+    <h3>🖼️ Water Sample Image Analysis</h3>
+    <p class="muted">
+      Upload a photograph of a water sample to preview it and record
+      visible observations.
+    </p>
+
+    <label for="imageUpload">Upload Water Sample Image</label>
+    <input type="file" id="imageUpload" accept="image/*">
+
+    <div id="imagePreview"></div>
+
+    <div id="imageResults" class="result-box" aria-live="polite">
+      Upload an image to view its preview.
+    </div>
+
+    <p class="note">
+      Image appearance alone cannot confirm chemical pollution or water safety.
+      Laboratory testing is required for reliable water-quality results.
+    </p>
+  </div>
+</section>
+
+<section id="predictions" class="section">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">DECISION SUPPORT</p>
+      <h2>AI Predictions</h2>
+      <p class="muted">Prototype preview until a trained model and backend are connected.</p>
+    </div>
+  </div>
+
+  <div class="stats">
+    <article class="stat-card"><span>Water level forecast</span><strong>Pending</strong><small>Requires time-series data</small></article>
+    <article class="stat-card"><span>Storage forecast</span><strong>Pending</strong><small>Requires verified storage history</small></article>
+    <article class="stat-card"><span>Anomaly detection</span><strong>Pending</strong><small>Requires sensor readings</small></article>
+  </div>
+
+  <div class="panel">
+    <h3>Prediction workflow</h3>
+    <ol class="steps">
+      <li>Collect verified historical and sensor readings.</li>
+      <li>Clean and validate the dataset.</li>
+      <li>Run the trained forecasting / anomaly model.</li>
+      <li>Display predicted values with date, confidence and model details.</li>
+    </ol>
+    <p class="note">No AI prediction is being calculated on this page yet. Do not use this prototype for operational dam decisions.</p>
+  </div>
+</section>
+
+<section id="public" class="section">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">COMMUNITY</p>
+      <h2>Public Water Intelligence</h2>
+      <p class="muted">Submit a local observation for project demonstration.</p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>Report a water concern</h3>
+    <div class="form-grid">
+      <div><label for="reportName">Your name (optional)</label><input id="reportName" type="text" maxlength="60" placeholder="Name"></div>
+      <div><label for="reportLocation">Location</label><input id="reportLocation" type="text" maxlength="100" placeholder="Area / village / district"></div>
+      <div>
+        <label for="reportType">Concern type</label>
+        <select id="reportType">
+          <option value="">Choose type</option>
+          <option>Unusual water colour</option>
+          <option>Unusual odour</option>
+          <option>Visible waste</option>
+          <option>Fish / aquatic life concern</option>
+          <option>Other observation</option>
+        </select>
+      </div>
+      <div><label for="reportDate">Observation date</label><input id="reportDate" type="date"></div>
+      <div class="full">
+        <label for="reportDescription">Description</label>
+        <textarea id="reportDescription" rows="3" maxlength="500" placeholder="Describe what you observed. Avoid sharing private information."></textarea>
+      </div>
+    </div>
+
+    <button id="submitReport" type="button">Submit report</button>
+    <p id="reportMessage" class="note" aria-live="polite"></p>
+    <p class="note">Reports are stored only in this browser using local storage. They are not sent to an authority or backend.</p>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">
+      <h3>Submitted reports</h3>
+      <button class="secondary small" id="clearReports" type="button">Clear local reports</button>
+    </div>
+    <div id="reportsList" class="reports-list">No reports submitted yet.</div>
+  </div>
+
+  <div class="info-grid">
+    <article class="info-card"><h3>Conserve water</h3><p>Reduce avoidable wastage and protect local water sources.</p></article>
+    <article class="info-card"><h3>Observe responsibly</h3><p>Record the location and date of an observation without entering unsafe areas.</p></article>
+    <article class="info-card"><h3>Verify information</h3><p>Public observations need review and testing before being treated as confirmed pollution.</p></article>
+  </div>
+</section>
+
+<section id="alerts" class="section">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">NOTIFICATIONS</p>
+      <h2>Alerts & Notifications</h2>
+      <p class="muted">Current connection status.</p>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="alert-row">
+      <span class="alert-dot"></span>
+      <div>
+        <strong>No verified live alerts connected</strong>
+        <p class="muted">Official warnings must come from verified authorities or a connected monitoring service.</p>
+      </div>
+    </div>
+    <div id="localAlertList"></div>
+  </div>
+</section>
+
+<section id="about" class="section">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">PROJECT</p>
+      <h2>About Aqua Sentinel</h2>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>AI-powered water intelligence prototype</h3>
+    <p>Aqua Sentinel is a student project concept for reservoir information, water-quality analysis, forecasting support and public awareness. Actual monitoring requires verified data sources, sensors and a connected backend.</p>
+    <h3 class="subheading">Potential reference organizations / portals</h3>
+    <ul class="source-list">
+      <li>Central Water Commission (CWC)</li>
+      <li>Central Pollution Control Board (CPCB)</li>
+      <li>India Meteorological Department (IMD)</li>
+      <li>National Water Data Portal</li>
+      <li>Tamil Nadu water-resource departments</li>
+    </ul>
+    <p class="note">Listing an organization does not mean this prototype is connected to or endorsed by it.</p>
+  </div>
+</section>
+
+<footer>Aqua Sentinel · Water Intelligence Prototype · Demo data clearly labelled</footer>
+</main>
+</div>
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dam Details | Aqua Sentinel</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main class="main" style="margin-left:0">
+<header class="topbar">
+<div>
+<p class="eyebrow">AQUA SENTINEL</p>
+<h1 id="damName">Dam profile</h1>
+<p id="damLocation" class="muted"></p>
+</div>
+<a class="button" href="dashboard.html">All dams</a>
+</header>
+
+<section class="section">
+<div class="panel">
+<span class="demo-label">NO LIVE DATA CONNECTED</span>
+<h2 class="subheading">Reservoir information</h2>
+<div class="detail-list" id="damFacts"></div>
+</div>
+
+<div class="panel">
+<h3>Water quality parameters</h3>
+<div class="detail-list" id="qualityFacts"></div>
+<p class="note">Values are not available because verified measurements have not been connected.</p>
+</div>
+
+<div class="panel">
+<h3>AI risk assessment</h3>
+<p>Pending verified measurements and a validated prediction model.</p>
+</div>
+</section>
+</main>
+<script src="js/dam-details.js"></script>
+</body>
+</html>
