@@ -57,7 +57,7 @@
     <div class="panel-title">
       <div>
         <h3>Reservoir overview</h3>
-        <p class="muted">Illustrative index values, not actual water levels.</p>
+        <p class="muted">Historical storage records from the connected dataset, not live sensor readings.</p>
       </div>
     </div>
     <div class="chart-wrap"><canvas id="overviewChart"></canvas></div>
@@ -87,7 +87,7 @@
     <div>
       <p class="eyebrow">COMPARE</p>
       <h2>Dam Comparison</h2>
-      <p class="muted">Compare illustrative index values for two selected dams.</p>
+      <p class="muted">Compare available historical storage records for two selected dams.</p>
     </div>
   </div>
   <div class="panel">
@@ -103,7 +103,7 @@
     </div>
     <button id="compareButton" type="button">Compare dams</button>
     <div class="chart-wrap"><canvas id="comparisonChart"></canvas></div>
-    <p class="note">Values are fictional demonstration indices and must not be treated as measured reservoir data.</p>
+    <p class="note">Only backend historical records are shown. Missing records are not estimated or filled with sample values.</p>
   </div>
 </section>
 
