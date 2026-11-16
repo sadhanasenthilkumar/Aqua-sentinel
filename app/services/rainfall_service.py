@@ -35,9 +35,26 @@ DAMS = {
 }
 
 
-def get_rainfall(latitude, longitude):
-    url = "https://api.open-meteo.com/v1/forecast"
+# Short in-process cache reduces repeated calls to the public weather API.
+# If the provider returns 429/5xx, serve the last successful estimate when available.
+import time
 
+_RAINFALL_CACHE = {}
+_RAINFALL_CACHE_TTL_SECONDS = 15 * 60
+
+
+def get_rainfall(latitude, longitude):
+    key = (round(float(latitude), 4), round(float(longitude), 4))
+    now = time.monotonic()
+    cached = _RAINFALL_CACHE.get(key)
+
+    if cached and now - cached["saved_at"] < _RAINFALL_CACHE_TTL_SECONDS:
+        result = dict(cached["weather"])
+        result["_cache_status"] = "fresh"
+        result["_cache_notice"] = "Cached weather-model estimate; refreshed at most every 15 minutes."
+        return result
+
+    url = "https://api.open-meteo.com/v1/forecast"
     params = {
         "latitude": latitude,
         "longitude": longitude,
@@ -47,9 +64,22 @@ def get_rainfall(latitude, longitude):
         "timezone": "Asia/Kolkata"
     }
 
-    response = requests.get(url, params=params, timeout=30)
-    response.raise_for_status()
-    return response.json()
+    try:
+        response = requests.get(url, params=params, timeout=12)
+        response.raise_for_status()
+        weather = response.json()
+        _RAINFALL_CACHE[key] = {"weather": weather, "saved_at": now}
+        result = dict(weather)
+        result["_cache_status"] = "fresh"
+        result["_cache_notice"] = "Open-Meteo weather-model estimate; not a rain-gauge observation."
+        return result
+    except requests.RequestException:
+        if cached:
+            result = dict(cached["weather"])
+            result["_cache_status"] = "stale"
+            result["_cache_notice"] = "Weather provider is temporarily unavailable; showing the last successful cached estimate."
+            return result
+        raise
 
 
 def get_all_dams_rainfall():
