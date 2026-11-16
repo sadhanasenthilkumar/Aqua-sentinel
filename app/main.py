@@ -156,7 +156,9 @@ def rainfall_by_dam(reservoir_slug: str):
             "Weather model estimate, not rain-gauge observation"
         ),
         "current": weather.get("current"),
-        "daily_forecast": weather.get("daily")
+        "daily_forecast": weather.get("daily"),
+        "cache_status": weather.get("_cache_status", "fresh"),
+        "cache_notice": weather.get("_cache_notice")
     }
 
 
